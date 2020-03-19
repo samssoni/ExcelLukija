@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html>
+  
+<title>Excelin Lukija</title>
+<head>
+  <script lang="javascript" src="xlsx.full.min.js"></script>
+  <script lang="javascript" src="FileSaver.min.js"></script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="jquery-ui.min.css">
+  <script src="external/jquery/jquery.js"></script>
+  <script src="jquery-ui.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.js"></script>
+  <script src="https://printjs-4de6.kxcdn.com/print.min.js"></script>
+  <script src="https://printjs-4de6.kxcdn.com/print.min.css"></script>
+  <style>
+    p,
+    input {
+      font: 14px Verdana;
+    }
+
+    table {
+      border-collapse: collapse;
+      text-align: center;
+      border-width:1px 1px 1px 1px;
+      margin-left: auto;
+      margin-right: auto;
+      border: solid 2px rgb(117, 117, 117);
+      word-break: break-all;
+    }
+    td {
+      border: solid 2px rgb(117, 117, 117);
+      border-width:1px 1px 1px 1px;
+      min-width: 100px;
+    }
+    th {
+      border: solid 2px rgb(117, 117, 117);
+      border-width:1px 1px 1px 1px;
+      min-width: 50px;
+      max-width: 90px;
+      font-weight: bold;
+    }
+  </style>
+
+  
+
+  <script>
+
+    function clearSlider(){
+      $("#slider-range").empty();
+    }
+    var headerit = [];
+    var labeli;
+    var checkbox;
+    var canvas;
+    var myChart;
+    var ekaCol;
+    var ajat = "A1:BM26000";
+    var json_object;
+    var graafiArvo = [];
+    var daattaobject;
+    var ExcelToJSON = function () {
+
+      this.parseExcel = function (file) {
+
+        var reader = new FileReader();
+
+
+        reader.addEventListener("load", function (e) {
+
+          
+          
+
+          document.getElementById("printtaaTaulu").removeAttribute("hidden");
+          document.getElementById("printtaaKaavio").removeAttribute("hidden");
+          document.getElementById("radio1").removeAttribute("hidden");
+          document.getElementById("radio2").removeAttribute("hidden");
+          document.getElementById("radio3").removeAttribute("hidden");
+          document.getElementById("radio4").removeAttribute("hidden");
+          document.getElementById("valitsin").removeAttribute("hidden");
+          document.getElementById("valitsinLabel").removeAttribute("hidden");
+          document.getElementById("radioL1").removeAttribute("hidden");
+          document.getElementById("radioL2").removeAttribute("hidden");
+          document.getElementById("radioL3").removeAttribute("hidden");
+          document.getElementById("radioL4").removeAttribute("hidden");
+          document.getElementById("naytaKaikki").removeAttribute("hidden");
+          
+          var tauluNappi = document.getElementById("tauluNappi")
+          if (typeof (tauluNappi) == "undefined" || tauluNappi == null) {
+            var tableNappula = document.createElement("BUTTON");
+            tableNappula.innerHTML = "Tee Taulu";
+            tableNappula.setAttribute("onclick", "CreateTableFromJSON()");
+            tableNappula.setAttribute("id", "tauluNappi");
+            
+            document.getElementById("nappulat").appendChild(tableNappula);
+          };
+
+          var chartNappi = document.getElementById("chartNappi")
+          if (typeof (chartNappi) == "undefined" || chartNappi == null) {
+            var chartNappula = document.createElement("BUTTON");
+            chartNappula.innerHTML = "Tee Kaavio"
+            chartNappula.setAttribute("onclick", "TeeGraph(graafiArvo)");
+            chartNappula.addEventListener("click", function () {
+              graafiArvo = TeeGraph(graafiArvo)
+              
+            });
+            chartNappula.setAttribute("id", "chartNappi");
+            document.getElementById("graphDiv").appendChild(chartNappula);
+          };
+
+          var data = e.target.result;
+          var workbook = XLSX.read(data, {
+            type: 'binary'
+          });
+
+          workbook.SheetNames.forEach(function (sheetName) {
+            // Here is your object
+            var XL_row_object = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { range: ajat }, { header: "0" });
+            json_object = JSON.stringify(XL_row_object);
+            daattaobject = XL_row_object;
+            
+            headerit = HaeHeaderit();
+            console.log(headerit.length);
+
+            for (i = 1; i < headerit.length; i++){
+              labeli = document.createElement('label');
+              checkbox = document.createElement('input');
+              checkbox.type = "checkbox";
+              checkbox.name = "col" + headerit[i];
+              checkbox.id = "col" + headerit[i];
+              checkbox.value = headerit[i];
+              console.log(headerit[i]);
+              checkbox.hidden = true;
+              
+
+              labeli.innerHTML = "<br>" + headerit[i] + " ";
+              labeli.id = "labeli" + headerit[i];
+              labeli.hidden = true;
+              if (checkbox.value == "BARE_FIBER_DIAMETER_NS"){
+                  checkbox.hidden = false;
+                  checkbox.checked = true;
+                  labeli.hidden = false;
+              }else if (checkbox.value == "CAPSTAN_SPEED_ME"){
+                  checkbox.hidden = false;
+                  checkbox.checked = true;
+                  labeli.hidden = false;
+              }else if (checkbox.value == "COATED_FIBER_TENSION_ME"){
+                  checkbox.hidden = false;
+                  checkbox.checked = true;
+                  labeli.hidden = false;
+              }else if (checkbox.value == "CURRENT_REEL_TOTAL_LENGTH_ME"){
+                  checkbox.hidden = false;
+                  checkbox.checked = true;
+                  labeli.hidden = false;
+              }else if (checkbox.value == "COATED_DIAMETER_ME"){
+                  checkbox.hidden = false;
+                  checkbox.checked = true;
+                  labeli.hidden = false;
+              }
+              labeli.appendChild(checkbox);
+              document.getElementById("checkboxContainer").appendChild(labeli);
+              document.getElementById("containerit").appendChild(checkboxContainer);
+
+            };
+
+            
+        
+
+            for (var i = 0; i < 1; i++) {
+            for (var key in daattaobject[i]) {
+        
+        
+          col.push(key);
+          ekaCol = col[0];
+    
+      }
+    }
+         
+            
+          })
+
+          $(document).ready(function () {
+
+$(reader).on("loadend", function () {
+
+ 
+  
+ 
+  $("#slider-range").show();
+  if (document.getElementById("slider-range")){
+    $("#slider-range").empty();
+  }
+  $("#slider-range").slider({
+    range: true,
+    min: 0,
+    max: daattaobject.length - 2,
+    values: [0, daattaobject.length],
+    slide: function (event, ui) {
+      
+      $("#amount").val(daattaobject[$("#slider-range").slider("values", 0)][ekaCol] + " - "
+        + daattaobject[$("#slider-range").slider("values", 1) + 1][ekaCol]);
+    },
+    change: function (event, ui) {
+      $("#amount").val(daattaobject[$("#slider-range").slider("values", 0)][ekaCol] + " - "
+        + daattaobject[$("#slider-range").slider("values", 1) + 1][ekaCol]);
+    }
+  });
+  //$("#amount").val (daattaobject[value2[0]].SF0417 + " - " 
+  //                + daattaobject[value2[1] + 1].SF0417);
+
+});
+
+
+});
+//jQuery( '#xlx_json' ).val( json_object );
+
+
+        });
+        reader.onloadend = function (e) {
+          
+        }
+        reader.onerror = function (ex) {
+          console.log(ex);
+        };
+
+        reader.readAsBinaryString(file);
+
+      };
+
+    };
+
+
+    function handleFileSelect(evt) {
+
+      var files = evt.target.files; // FileList object
+      var xl2json = new ExcelToJSON();
+      xl2json.parseExcel(files[0]);
+    }
+
+
+    function TeeGraph() {
+      var ctx = document.getElementById('chartCanv').getContext('2d');
+      canvas = document.getElementById('chartCanv');
+      //var valittuna;
+      //valittuna = document.getElementById("valitstin");
+      var graphArray = [];
+      var addGraph = [];
+      var haeMinMax = asetaMinMax(valuet[0], valuet[1]);
+      var labeelit = [];
+      
+     
+        if(window.myChart && window.myChart !== null){
+        window.myChart.destroy();
+        
+        }
+        var leveys = haeMinMax[1] - haeMinMax[0];
+        
+        for (i = haeMinMax[0]; i < haeMinMax[1]; i++) {
+
+          var uusiArvo = [];
+          if (document.getElementById("valitsin").value == "aika")
+          { 
+          var jokuArvo = Object.values(daattaobject[i])
+          graphArray.push(jokuArvo[document.querySelector('input[name="graafi"]:checked').value]);
+          //graphArray[i] = jokuArvo[1];
+          labeelit.push(jokuArvo[0]);
+          }
+
+          if (document.getElementById("valitsin").value == "pituus")
+          {
+          var jokuArvo = Object.values(daattaobject[i])
+          graphArray.push(jokuArvo[document.querySelector('input[name="graafi"]:checked').value]);
+          //graphArray[i] = jokuArvo[1];
+          labeelit.push(jokuArvo[24]);
+          }
+        }
+        var ctx = document.getElementById('chartCanv').getContext('2d');
+        myChart = new Chart(ctx, {
+          type: "line",
+          data: {
+            
+            labels: labeelit,
+            datasets: [{
+              showLine: false,
+              label: "arvo",
+              data: graphArray,
+              "fill": false,
+              "lineTension": 0.1,
+            
+              pointBackgroundColor: '#07de23',
+              borderColor: '#000000',
+              backgroundColor: '#07de23',
+              pointBorderColor: '#000000',},
+            {
+              showLine: false,
+              label: "arvo",
+              "fill": false,
+              "lineTension": 0.1,
+              
+              pointBackgroundColor: '#07de23',
+              borderColor: '#000000',
+              backgroundColor: '#07de23',
+              pointBorderColor: '#000000',}]
+            
+          },
+          options: {
+            tooltips: {
+              enabled: true
+            },
+            elements: {
+              line: {
+                tension: 2
+              },
+            },
+            scales: {
+              xAxes: [{
+                ticks: {
+                  suggestedMax: leveys,
+                  stepSize: 1,
+                  
+                }
+              }],
+              yAxes: [{
+                ticks: {
+                  suggestedMin: 200,
+                  stepSize: 3,
+                }
+              }]
+            }
+          }
+        });
+        
+      }
+      
+
+
+    function HaeHeaderit() {
+
+      var h = [];
+
+      for (var i = 0; i < daattaobject.length; i++) {
+      for (var key in daattaobject[i]) {
+        
+        if (h.indexOf(key) === -1) {
+          h.push(key);
+          
+        }
+        
+      }
+    }
+
+console.log(h);
+  return h;
+
+    };
+
+    function naytaKaikki() {
+      for (i = 1; i < headerit.length - 1; i++)
+      {
+        if (document.getElementById("col" + headerit[i]).hasAttribute("hidden") == true && 
+        document.getElementById("labeli" + headerit[i]).hasAttribute("hidden") == true)
+        {
+        document.getElementById("col" + headerit[i]).removeAttribute("hidden");
+        document.getElementById("labeli" + headerit[i]).removeAttribute("hidden");
+        }
+
+        if(document.getElementById("col" + headerit[i]).hasAttribute("hidden") == false)
+       {
+         checkbox = document.createElement('input');
+         checkbox.type = "checkbox";
+         checkbox.name = "valitsin" + headerit[i];
+         checkbox.id = "valitsin" + headerit[i];
+         checkbox.value = headerit[i];
+         labeli.innerHTML = "<br>" + headerit[i] + " ";
+         labeli.id = "labeli" + headerit[i];
+         labeli.appendChild(checkbox);
+         document.getElementById("graphDiv").appendChild(labeli);
+       }
+
+      }
+      document.getElementById("piilotaKaikki").removeAttribute("hidden");
+  
+    };
+
+    function piilotaKaikki() {
+      for (i = 1; i < headerit.length - 1; i++) {
+        if (document.getElementById("col" + headerit[i]).checked != true)
+        {
+          if(document.getElementById("col" + headerit[i]).hasAttribute("hidden") == false && 
+          document.getElementById("labeli" + headerit[i]).hasAttribute("hidden") == false)
+          {
+            document.getElementById("col" + headerit[i]).setAttribute("hidden", true);
+            document.getElementById("labeli" + headerit[i]).setAttribute("hidden", true); 
+          }
+        }
+      }
+    };
+
+    
+
+    function asetaMinMax() {
+
+      var value2 = $("#slider-range").slider("values");
+      ajat = "A" + value2[0] + 1 + ":" + "BM" + value2[1] + 1;
+      var g = 0;
+
+      var array = [value2[0], value2[1] + 2];
+      return array;
+
+
+    };
+
+
+  </script>
+</head>
+
+<body>
+  <div>
+    <form enctype="multipart/form-data" id="fileform">
+      <input id="upload" type=file name="files[]">
+    </form>
+
+    <textarea class="form-control" rows=15 cols=100 id="xlx_json" hidden></textarea>
+
+    <script>
+      document.getElementById('upload').addEventListener('change', handleFileSelect, false);
+
+    </script>
+  </div>
+
+  <label for="slider-range">Valitse ajat: </label>
+  <input type="text" id="amount" readonly size="75px">
+
+
+  <div id="slider-range"></div>
+  <div class="checkbox" id="checkboxContainer"></div>
+  <div id="containerit">
+      <button type="button" id="tallenna" onclick="teeWB()">tallenna</button>
+      <button type="button" id="teeWB">Tee Excel</button>
+      <button type="button" id="naytaKaikki" hidden onclick="naytaKaikki()">Näytä lisävalinnat</button>
+      <button type="button" id="piilotaKaikki" hidden onclick="piilotaKaikki()">Piilota lisävalinnat</button>
+  
+
+    </div>
+  <div id="nappulat">
+  </div>
+
+
+  <div style="text-align: right;" id="graphDiv">
+
+    <label for="valitsin" hidden id="valitsinLabel">Minkä suhteen</label>
+    <select id="valitsin" hidden>
+      <option value="aika" id="aikaValitsin" selected>Aika</option>
+      <option value="pituus" id="pituusValitsin">Pituus</option>
+    </select><br>
+
+    <label for="radio1" id="radioL1" hidden>LS</label>
+    <input type="radio" id="radio1" name="graafi" value="1" hidden checked="true"> <br>
+
+    <label for="radio2" id="radioL2" hidden>BFD</label>
+    <input type="radio" id="radio2" name="graafi" value="2" hidden> <br>
+
+    <label for="radio3" id="radioL3" hidden>Ften</label>
+    <input type="radio" id="radio3" name="graafi" value="3" hidden> <br>
+
+    <label for="radio4" id="radioL4" hidden>SOD</label>
+    <input type="radio" id="radio4" name="graafi" value="4" hidden> <br>
+
+
+  </div>
+  <div style="text-align: right;">
+    <br>
+    <button type="button" id="printtaaTaulu" hidden onclick="printJS({
+    type: 'html',
+    printable: 'table',
+    style: [ 
+              'table, th, td {border: solid 2px rgb(117, 117, 117); word-break: break-all; border-width:1px 1px 1px 1px; min-width: 100px;max-width: 150px; border-collapse: collapse;}',
+              'th {font-weight: bold; max-width: 125px;}',
+              'td {word-break: normal;}']
+              })">Tulosta Taulukko</button><br><br>
+
+
+  <button type="button" id="printtaaKaavio" hidden onclick="printJS({
+    printable: 'chartCanv',
+    type: 'html',
+    header: 'Kaavio'
+  })">Tulosta Kaavio</button>
+
+  
+</div>
+  <div id="chartDiv" style="text-align: center;">
+    <canvas id="chartCanv"></canvas>
+    <p id="showData" style="text-align: center;"></p>
+  </div>
+
+
+
+    
+  </div>
+  <script>
+  function teeWB() {
+     var workB = XLSX.utils.table_to_book(document.getElementById('table'),{sheet:"Testi Sheet"});
+
+     var wbout = XLSX.write(workB, {booktype:'xlsx', bookSST:true, type: 'binary'});
+
+     function s2ab(s) {
+              var buf = new ArrayBuffer(s.length);
+              var view = new Uint8Array(buf);
+              for (var i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
+              return buf;
+     }
+     
+  
+    $("#teeWB").click(function(){
+      saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), 'test.xlsx');
+    });
+  }
+    </script>
+</body>
+
+
+<script>
+  var valuet = [2];
+  var ekaCol;
+  var col = [];
+  function CreateTableFromJSON() {
+    var y = [headerit.length];
+    y[0] = true;
+
+    for (i = 1; i < headerit.length; i++)
+    {
+      y[i] = document.getElementById("col" + headerit[i]).checked;
+    }
+
+
+
+
+
+    var valuetUusi = asetaMinMax(valuet[0], valuet[1]);
+    
+    var myBooks = daattaobject;
+    console.log(myBooks.length);
+
+    // EXTRACT VALUE FOR HTML HEADER. 
+    
+    for (var i = 0; i < myBooks.length; i++) {
+      for (var key in myBooks[i]) {
+        
+        if (col.indexOf(key) === -1) {
+          col.push(key);
+          
+        }
+      }
+    }
+
+    // CREATE DYNAMIC TABLE.
+    var table = document.createElement("table");
+    table.setAttribute("id", "table");
+
+
+    // CREATE HTML TABLE HEADER ROW USING THE EXTRACTED HEADERS ABOVE.
+
+    var tr = table.insertRow(-1);                   // TABLE ROW.
+
+    for (var i = 0; i <= col.length; i++) {
+      if (y[i] == true) {
+
+        var th = document.createElement("th");      // TABLE HEADER.
+        th.innerHTML = col[i];
+        tr.appendChild(th);
+      }
+
+
+    }
+
+
+    // ADD JSON DATA TO THE TABLE AS ROWS.
+    for (var i = valuetUusi[0]; i < valuetUusi[1]; i++) {
+
+      tr = table.insertRow(-1);
+
+      for (var j = 0; j < col.length; j++) {
+        if (y[j] == true) {
+          var tabCell = tr.insertCell(-1);
+          tabCell.innerHTML = myBooks[i][col[j]];
+          if (myBooks[i][col[j]] == null) {
+            continue;
+          }
+        }
+      }
+    }
+
+    // FINALLY ADD THE NEWLY CREATED TABLE WITH JSON DATA TO A CONTAINER.
+    var divContainer = document.getElementById("showData");
+    divContainer.innerHTML = "";
+    divContainer.appendChild(table);
+
+  }
+
+
+
+
+//Tekijä: Samuli Kauppinen, samppak123@gmail.com
+</script>
+
+</html>
